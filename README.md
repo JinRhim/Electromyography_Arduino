@@ -44,6 +44,7 @@ The picture on the left is from the myoware sensor, and the picture on the right
 ## Circuit Design
 
 <img width="1360" alt="image" src="https://user-images.githubusercontent.com/93160540/178064052-9e1ccac6-54c5-437b-944c-91c4f12b94a4.png">
+<img width="845" alt="image" src="https://user-images.githubusercontent.com/93160540/178064524-37526a99-1b96-4fa7-94f1-967cf1211295.png">
 
 
 
