@@ -1,4 +1,5 @@
-# EMG Sensor
+# Prosthetic Arm with EMG Sensor
+<img width="1224" alt="image" src="https://user-images.githubusercontent.com/93160540/178064255-7b6dec91-0a37-433b-b4ca-ff3477a1df8b.png">
 
 <img width="638" alt="image" src="https://user-images.githubusercontent.com/93160540/175752176-7b88f66e-afa7-4303-b2ed-c7faa6b5244f.png">
 
@@ -35,11 +36,14 @@ Filters remove the useless signals that comes from external source, other than E
 | Removes DC offset  | Content Cell  |
 |Typical Cutoff: 5 ~ 20 Hz | Typical Cutoff: 200 ~ 1000 Hz|
 
-### Reason to have high-pass filter 
 
-<img width="1321" alt="image" src="https://user-images.githubusercontent.com/93160540/178057580-10f9571a-d447-4828-9e72-5e07e456136b.png">
+<img width="1208" alt="image" src="https://user-images.githubusercontent.com/93160540/178063855-a34c9010-a174-48c8-8733-1e7b021a149a.png">
 
 The picture on the left is from the myoware sensor, and the picture on the right is from AD8232 EKG sensor. Because AD8232 sensor lacks high-pass filter, it lacks the constant baseline.
+
+## Circuit Design
+
+<img width="1360" alt="image" src="https://user-images.githubusercontent.com/93160540/178064052-9e1ccac6-54c5-437b-944c-91c4f12b94a4.png">
 
 
 
