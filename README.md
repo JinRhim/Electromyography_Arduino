@@ -1,4 +1,4 @@
-# Prosthetic Arm with EMG Sensor
+# Prosthetic Arm with EMG Sensor and ESP32
 <img width="1224" alt="image" src="https://user-images.githubusercontent.com/93160540/178064255-7b6dec91-0a37-433b-b4ca-ff3477a1df8b.png">
 
 <img width="638" alt="image" src="https://user-images.githubusercontent.com/93160540/175752176-7b88f66e-afa7-4303-b2ed-c7faa6b5244f.png">
@@ -44,7 +44,7 @@ The picture on the left is from the myoware sensor, and the picture on the right
 ## Circuit Design
 
 <img width="1360" alt="image" src="https://user-images.githubusercontent.com/93160540/178064052-9e1ccac6-54c5-437b-944c-91c4f12b94a4.png">
-<img width="845" alt="image" src="https://user-images.githubusercontent.com/93160540/178064524-37526a99-1b96-4fa7-94f1-967cf1211295.png">
+<img width="1230" alt="image" src="https://user-images.githubusercontent.com/93160540/178064888-4b2cfe70-a363-4fb9-b61f-3c3a7cfb408d.png">
 
 
 
