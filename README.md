@@ -1,4 +1,4 @@
-# Electromyography_Arduino
+# EMG Sensor
 
 <img width="638" alt="image" src="https://user-images.githubusercontent.com/93160540/175752176-7b88f66e-afa7-4303-b2ed-c7faa6b5244f.png">
 
@@ -9,14 +9,37 @@ Because our muscles repolarize and depolarize, just like brain neurons, our musc
 
 Electromyography detects such small electrical changes in muscle and amplifies those signals. Those amplified analog signals then could be read through Analog to Ditigal Comparator of ESP32 board. 
 
-## Why is the sampling rate at 1000 Hz? 
+The EMG sensor should be placed at the flexor muscle 
+<img width="1241" alt="image" src="https://user-images.githubusercontent.com/93160540/178055154-1e55b69f-17b5-45a6-9ed2-25283ac5a8fb.png">
 
 
-## What does Nyquiest Theorm States? 
+## What does Nyquiest Theorm States? Why is the sampling rate at 1000 Hz? 
+
+Nyquiest Theorm states that sampling rate must be at least twice the highest frequency component of signal. If the sampling rate is lower than the minimum sampling rate, then it will cause aliasing effect. Too high sampling rate will cause computational complexity. Most of other research consisted of 500 Hz to 2000 Hz sampling rate, so our group decided to have sampling rate of 1000 Hz.
 
 
 ## What is low-pass filter and high-pass filter? 
 
+Filters remove the useless signals that comes from external source, other than EMG signal. There are multiple sources of noises in sEMG signal, such as 
 
-## Raw EMG signal vs Rectified EMG Signal 
+ - Electronics of amplification system (thermal noise)
+ - Skin-electrode interface (electro-chemical noise)
+ - movement artifact noise when underlying skin causing a movement at electrode-skin interface 
+ - power line noise  
+ - cable motion artifiact 
+ - can be eliminated by appropriate circuit design 
+
+| Low-Pass Filter| High-Pass Filter |
+| ------------- | ------------- |
+| Removes baseline drift associated with movement or perspiration  | Prevents aliasing |
+| Removes DC offset  | Content Cell  |
+|Typical Cutoff: 5 ~ 20 Hz | Typical Cutoff: 200 ~ 1000 Hz|
+
+### Reason to have high-pass filter 
+
+<img width="1321" alt="image" src="https://user-images.githubusercontent.com/93160540/178057580-10f9571a-d447-4828-9e72-5e07e456136b.png">
+
+The picture on the left is from the myoware sensor, and the picture on the right is from AD8232 EKG sensor. Because AD8232 sensor lacks high-pass filter, it lacks the constant baseline.
+
+
 
