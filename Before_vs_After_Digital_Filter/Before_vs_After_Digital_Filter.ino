@@ -14,41 +14,46 @@
 // Vref = reference voltage for comparison 
 // ADC_ATTEN_DB_11 = 150mv ~ 2450mv 
 
-
-// ADC1 channel 0 is GPIO 36.
 // ADC1 channel 5 is GPIO33. 
-// ADC2_Channel_ 7 = GPIO27 
+
+// https://techtutorialsx.com/2017/10/07/esp32-arduino-timer-interrupts/
+
+// https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/api/timer.html
+
+// https://www.youtube.com/watch?v=RWgyCcnUxPY
 
 // default clock = 80 mHz 
+
+// spinlock = a thread is staying in loop (spin) to check whether the lock is available. 
+
+
 
 
 const int ledPin = 23;
 
 uint16_t adcRawVal;
-uint16_t adcRawVal_2;
-int read_raw; 
 
 uint16_t adcMax; 
 uint16_t adcMin; 
 
-const int lower_threshold = 50; 
-const int upper_threshold = 100; 
-
-const int lower_bound = 000;
-const int upper_bound = 4095;
-
-
-uint16_t ADC_Buff[100]; 
-int ADC_Buff_Index = 0; 
-int sum = 0; 
-int ADC_avg = 0; 
-
+const int lower_threshold = 1000; 
+const int upper_threshold = 1500; 
 
 
 volatile int interruptCounter;
-int totalInterruptCounter;
 
 hw_timer_t * timer = NULL;
+
+//=============
+// Digital Filter 
+
+float xn1 = 0; 
+float yn1 = 0; 
+
+//=============
+
+
+
 
 //synchronization between the main code and interrupt. 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
@@ -69,7 +74,6 @@ void setup() {
 
   adc_power_acquire(); 
   adc1_config_channel_atten(ADC1_CHANNEL_5, ADC_ATTEN_DB_11);
-  adc2_config_channel_atten(ADC2_CHANNEL_7, ADC_ATTEN_DB_11); 
   
   timer = timerBegin(0, 80, true);  // every 1 seconds timer is triggered 
 
@@ -80,26 +84,28 @@ void setup() {
 
   // 80 mHz / 80  = 1 million. 
   // 1 million microseconds = 1 seconds 
-  // 1000000 / 1000 = 1000 us = 1 ms.
+  // 1000000 / 1000 = 1000 us = 1 ms. 
   // ADC is triggered every 1ms to keep 1000 Hz sampling rate. 
-  timerAlarmWrite(timer, 5000, true);  //divide by 1000.
+  timerAlarmWrite(timer, 10000, true);  //divide by 1000.
   timerAlarmEnable(timer);
 }
 
 void TriggerADC() {
   adcRawVal = adc1_get_raw(ADC1_CHANNEL_5); 
-  esp_err_t r = adc2_get_raw( ADC2_CHANNEL_7, ADC_WIDTH_12Bit, &read_raw);
+ 
 
-  //Serial.printf("%d %d %d\n %d \n", adcRawVal, lower_threshold, upper_threshold, ADC_avg);
-  //Serial.printf("%d %d %d\n ", adcRawVal, lower_bound, upper_bound);
+  Serial.println(adcRawVal);
+  
+  float xn = adcRawVal; 
+  float yn = 0.969*yn1 + 0.0155*xn + 0.0155*xn1; 
 
-  Serial.printf("%d %d %d %d\n ", adcRawVal, read_raw, lower_bound, upper_bound);
+  xn1 = xn; 
+  yn1 = yn; 
 
-  //Serial.println(adcRawVal);
-  Serial.print("\n");
+  //Serial.println(yn); 
+  
   
 }
- 
 
 void loop() {
   if (interruptCounter > 0) {
@@ -108,10 +114,9 @@ void loop() {
     interruptCounter--;
     portEXIT_CRITICAL(&timerMux);
  
-    totalInterruptCounter++;
     TriggerADC(); 
-    //Serial.print(totalInterruptCounter);
-  } 
-
-}
+    
  
+  }
+ 
+}

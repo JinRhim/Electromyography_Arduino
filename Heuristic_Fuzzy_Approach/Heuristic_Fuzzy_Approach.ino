@@ -7,7 +7,6 @@
 #include "driver/gpio.h"
 #include "hal/adc_types.h"
 
-
 // ADC1: GPIO32 - GPIO39 
 // ADC2: cannot be used with wifi / bluetooth 
 
@@ -17,16 +16,22 @@
 
 // ADC1 channel 0 is GPIO 36.
 // ADC1 channel 5 is GPIO33. 
-// ADC2_Channel_ 7 = GPIO27 
+
+
+// https://techtutorialsx.com/2017/10/07/esp32-arduino-timer-interrupts/
+
+// https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/api/timer.html
+
+// https://www.youtube.com/watch?v=RWgyCcnUxPY
 
 // default clock = 80 mHz 
+
+// spinlock = a thread is staying in loop (spin) to check whether the lock is available. 
 
 
 const int ledPin = 23;
 
 uint16_t adcRawVal;
-uint16_t adcRawVal_2;
-int read_raw; 
 
 uint16_t adcMax; 
 uint16_t adcMin; 
@@ -34,14 +39,20 @@ uint16_t adcMin;
 const int lower_threshold = 50; 
 const int upper_threshold = 100; 
 
-const int lower_bound = 000;
-const int upper_bound = 4095;
+const int lower_bound = 500;
+const int upper_bound = 3500;
 
 
-uint16_t ADC_Buff[100]; 
+uint16_t ADC_Buff[64]; 
 int ADC_Buff_Index = 0; 
+int sqrt_sum = 0; 
+int rms = 0;
+
+
+uint16_t ADC_Buff_2[64]; 
+int ADC_Buff_Index_2 = 0; 
 int sum = 0; 
-int ADC_avg = 0; 
+int mav = 0;
 
 
 
@@ -69,7 +80,6 @@ void setup() {
 
   adc_power_acquire(); 
   adc1_config_channel_atten(ADC1_CHANNEL_5, ADC_ATTEN_DB_11);
-  adc2_config_channel_atten(ADC2_CHANNEL_7, ADC_ATTEN_DB_11); 
   
   timer = timerBegin(0, 80, true);  // every 1 seconds timer is triggered 
 
@@ -82,25 +92,48 @@ void setup() {
   // 1 million microseconds = 1 seconds 
   // 1000000 / 1000 = 1000 us = 1 ms.
   // ADC is triggered every 1ms to keep 1000 Hz sampling rate. 
-  timerAlarmWrite(timer, 5000, true);  //divide by 1000.
+  timerAlarmWrite(timer, 10000, true);  //divide by 1000.
   timerAlarmEnable(timer);
 }
 
 void TriggerADC() {
   adcRawVal = adc1_get_raw(ADC1_CHANNEL_5); 
-  esp_err_t r = adc2_get_raw( ADC2_CHANNEL_7, ADC_WIDTH_12Bit, &read_raw);
+
+ 
+  ADC_Buff[ADC_Buff_Index] = adcRawVal; 
+
+  ADC_Buff_Index = (ADC_Buff_Index + 1) % 64; 
+
+  if (ADC_Buff_Index == 63) {
+    sqrt_sum = 0; 
+    for (int i = 0; i < 64; i++) {
+      sqrt_sum += ADC_Buff[i]*ADC_Buff[i]; 
+    }
+    sqrt_sum = sqrt_sum/64;  
+    rms = sqrt(sqrt_sum);
+  }
+
+
+  ADC_Buff_2[ADC_Buff_Index_2] = adcRawVal; 
+
+  ADC_Buff_Index_2 = (ADC_Buff_Index_2 + 1) % 64; 
+
+  if (ADC_Buff_Index_2 == 63) {
+    sum = 0; 
+    for (int i = 0; i < 64; i++) {
+      sum += ADC_Buff[i]; 
+    }
+    mav = sum / 64; 
+  }
+
+
+  
+  //Serial.print("ADC Raw Value = "); 
 
   //Serial.printf("%d %d %d\n %d \n", adcRawVal, lower_threshold, upper_threshold, ADC_avg);
-  //Serial.printf("%d %d %d\n ", adcRawVal, lower_bound, upper_bound);
-
-  Serial.printf("%d %d %d %d\n ", adcRawVal, read_raw, lower_bound, upper_bound);
-
-  //Serial.println(adcRawVal);
-  Serial.print("\n");
-  
+  Serial.printf("%d %d %d %d %d\n", rms, mav,  adcRawVal, lower_bound, upper_bound);
 }
  
-
 void loop() {
   if (interruptCounter > 0) {
  
@@ -113,5 +146,8 @@ void loop() {
     //Serial.print(totalInterruptCounter);
   } 
 
+
+  
+ 
 }
  
