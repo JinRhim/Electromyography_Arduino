@@ -31,8 +31,8 @@ void loop() {
     // For the serial monitor
     Serial.print(2*x[0]);
     Serial.print(" ");
-    Serial.println(2*y[0]);
-    //Serial.println(2*x[0] - 2*y[0]);
+    //Serial.println(2*y[0]);
+    Serial.println(2*x[0] - 2*y[0]);
   }
 
   delay(1); // Wait 1ms

@@ -13,7 +13,7 @@ void setup() {
 void loop() {
   float t = micros()/1.0e6; 
   //raw signal 
-  float xn = sin(2* PI*2*t) + 0.2*sin(2* PI * 50* t); 
+  float xn = sin(1* PI*2*t) + 0.2*sin(2* PI * 50* t); 
 
 
   //filtered signal 
@@ -27,7 +27,7 @@ void loop() {
   if (k % 3 == 0) {
     Serial.print(2*xn); //this prints original signal 
     Serial.print(" "); 
-    Serial.println(2*yn);  
+    Serial.println(2*xn - 2*yn);  
   }
   k++; 
 }
